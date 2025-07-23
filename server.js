@@ -95,5 +95,4 @@ app.get("/metrics", async (req, res, next) => {
   next();
 });
 
-app.use('/users', userRouter);
 app.listen(80);
