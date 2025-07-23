@@ -95,4 +95,6 @@ app.get("/metrics", async (req, res, next) => {
   next();
 });
 
-app.listen(80);
+app.listen(80, '0.0.0.0', () => {
+  console.log('Server running');
+});
