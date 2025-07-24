@@ -199,11 +199,12 @@
         name: prom-nic
         resource_group: Adcash_Assignment
         location: switzerlandnorth
+        virtual_network: Ansible-Control-Node-vnet
+        subnet: nodeAppSubnet
         ip_configurations:
           - name: ipconfig1
-            subnet_id: "{{ subnet_result.subnets[0].id }}"
             private_ip_allocation_method: Dynamic
-
+            public_ip_allocation_method: Disabled
 
     - name: Create a VM
       azure_rm_virtualmachine:
