@@ -134,7 +134,7 @@
     - name: Clone GitHub repo
       git:
         repo: 'https://github.com/AnirudhBabu/Adcash-Assignment.git'
-        dest: './adcash-assignment'
+        dest: '/home/adcash/adcash-assignment'
         version: main
 
     - name: Get AKS credentials for kubectl
@@ -158,17 +158,14 @@
 
     - name: Render service manifest with correct values
       template:
-        src: ./adcash-assignment/service.yaml.j2
-        dest: ./adcash-assignment/service.yaml
-
-    
-
+        src: /home/adcash/adcash-assignment/service.yaml.j2
+        dest: /home/adcash/adcash-assignment/service.yaml
 
     - name: Apply Kubernetes Deployment
-      shell: kubectl apply -f ./adcash-assignment/{{ deployment_manifest }}
+      shell: kubectl apply -f /home/adcash/adcash-assignment/{{ deployment_manifest }}
 
     - name: Apply Kubernetes Service
-      shell: kubectl apply -f ./adcash-assignment/{{ service_manifest }}
+      shell: kubectl apply -f /home/adcash/adcash-assignment/{{ service_manifest }}
 
     - name: Wait for Gandalf pod to be live
       shell: |
