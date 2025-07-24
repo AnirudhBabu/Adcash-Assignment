@@ -1,6 +1,6 @@
 - name: Create Azure Kubernetes Cluster to host gandalfApp
-  hosts: localhost
-  connection: local
+  hosts: control
+  connection: ssh
   vars:
     auth_source: "cli"
 
@@ -115,8 +115,8 @@
 
 
 - name: Deploy GandalfApp to AKS
-  hosts: localhost
-  connection: local
+  hosts: control
+  connection: ssh
   vars:
     deployment_manifest: deployment.yaml
     service_manifest: service.yaml
