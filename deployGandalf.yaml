@@ -82,8 +82,8 @@
         aks_name: gandalfCluster
         username: adcash
         ssh_key: "{{ ssh_key }}"
-        client_id: "${{ secrets.AZURE_CREDENTIALS.client_id }}"
-        client_secret: "${{ secrets.AZURE_CREDENTIALS.client_secret }}"
+        client_id: "{{ client_id }}"
+        client_secret: "{{ client_secret }}"
         aks_version: 1.33.1
       azure_rm_aks:
         name: "{{ aks_name }}"
@@ -150,7 +150,7 @@
         kubectl create secret docker-registry ghcr-secret \
           --docker-server=ghcr.io \
           --docker-username=anirudhbabu \
-          --docker-password=${{ secrets.GHCR_PAT }} \
+          --docker-password={{ GHCR_PAT }} \
           --docker-email=anirudhbabu2001@gmail.com || echo "ghcr-secret already exists"
       args:
         executable: /bin/bash
