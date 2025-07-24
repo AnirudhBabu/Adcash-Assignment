@@ -14,8 +14,8 @@ jobs:
 
       - name: Set Image Name
         run: |
-          IMAGE="ghcr.io/${{ github.repository }}/gandalf-app:latest"
-          echo "IMAGE=$(echo IMAGE | tr '[:upper:] [:lower:]')" >> $GITHUB_ENV
+          REPO=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
+          echo "IMAGE=ghcr.io/$REPO/gandalf-app:latest" >> $GITHUB_ENV
 
       - name: Show image tag value
         run: |
