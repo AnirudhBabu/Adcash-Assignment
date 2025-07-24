@@ -1,31 +1,56 @@
-name: Build and Push Docker Image to GHCR
+name: Build, Push & Deploy Gandalf Image
 
 on:
   push:
-    branches: ["main"]
+    branches: [ "main" ]
 
 jobs:
-  build-and-push:
+  build-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
+    - name: Checkout Code
+      uses: actions/checkout@v4
 
-      - name: Set Image Name
-        run: |
-          REPO=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
-          echo "IMAGE=ghcr.io/$REPO/gandalf-app:latest" >> $GITHUB_ENV
+    - name: Set Image Tags
+      run: |
+        REPO=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
+        IMAGE=ghcr.io/$REPO/gandalf-app
+        echo "IMAGE=$IMAGE" >> $GITHUB_ENV
+        echo "TAG=${{ github.sha }}" >> $GITHUB_ENV
+        echo "LATEST_TAG=$IMAGE:latest" >> $GITHUB_ENV
+        echo "COMMIT_TAG=$IMAGE:${{ github.sha }}" >> $GITHUB_ENV
 
-      - name: Show image tag value
-        run: |
-          echo "Using image tag: $IMAGE"
+    - name: Show Image Tags
+      run: |
+        echo "Latest: $LATEST_TAG"
+        echo "Commit: $COMMIT_TAG"
 
-      - name: Log in to GHCR
-        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+    - name: Log in to GHCR
+      run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
-      - name: Build Docker Image
-        run: docker build . --file Dockerfile --tag $IMAGE
+    - name: Build Docker Images
+      run: |
+        docker build . -t $LATEST_TAG -t $COMMIT_TAG
 
-      - name: Push Docker Image to GHCR
-        run: docker push $IMAGE
+    - name: Push Docker Images
+      run: |
+        docker push $LATEST_TAG
+        docker push $COMMIT_TAG
+
+    - name: Azure Login
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+    - name: Set AKS Context
+      run: |
+        az aks get-credentials \
+          --resource-group Adcash_Assignment \
+          --name GandalfCluster \
+          --overwrite-existing
+
+    - name: Trigger Kubernetes Redeploy
+      run: |
+        kubectl set image deployment/gandalf-app gandalf=$LATEST_TAG
+        kubectl rollout status deployment/gandalf-app

@@ -16,6 +16,6 @@ spec:
         - name: ghcr-secret
       containers:
       - name: gandalf
-        image: ghcr.io/anirudhbabu/Adcash-Assignment/gandalf-app:latest
+        image: ghcr.io/anirudhbabu/adcash-assignment/gandalf-app:latest
         ports:
         - containerPort: 80
