@@ -192,6 +192,7 @@
         resource_group: {{ resource_group }}
         name: prom-server
         vm_size: Standard_A2_v2
+        location: switzerlandnorth
         admin_username: promSnoop
         ssh_password_enabled: false
         ssh_public_keys:
