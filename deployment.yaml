@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gandalf-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: gandalf
+  template:
+    metadata:
+      labels:
+        app: gandalf
+    spec:
+      containers:
+      - name: gandalf
+        image: yourregistry/gandalf-app:latest
+        ports:
+        - containerPort: 80
