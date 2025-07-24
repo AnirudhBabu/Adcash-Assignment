@@ -78,7 +78,7 @@
         location: "{{ location }}"
         resource_group: "{{ resource_group }}"
         dns_prefix: "{{ aks_name }}"
-        kubernetes_version: "{{aks_version}}"
+        kubernetes_version: "{{ aks_version }}"
         linux_profile:
           admin_username: "{{ username }}"
           ssh_key: "{{ ssh_key }}"
@@ -189,7 +189,7 @@
 
     - name: Create a VM
       azure_rm_virtualmachine:
-        resource_group: "{{ resource_group }}"
+        resource_group: Adcash_Assignment
         name: prom-server
         vm_size: Standard_A2_v2
         location: switzerlandnorth
