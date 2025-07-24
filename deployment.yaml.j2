@@ -15,7 +15,7 @@ spec:
       imagePullSecrets:
         - name: ghcr-secret
       containers:
-      - name: gandalf
-        image: ghcr.io/anirudhbabu/adcash-assignment/gandalf-app:latest
-        ports:
-        - containerPort: 80
+        - name: gandalf
+          image: ghcr.io/anirudhbabu/adcash-assignment/gandalf-app:{{ image_tag }}
+          ports:
+            - containerPort: 80

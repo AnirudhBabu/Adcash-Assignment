@@ -3,10 +3,10 @@ kind: Service
 metadata:
   name: gandalf-service
   annotations:
-    service.beta.kubernetes.io/azure-load-balancer-resource-group: yourResourceGroup
+    service.beta.kubernetes.io/azure-load-balancer-resource-group: {{ resource_group }}
 spec:
   type: LoadBalancer
-  loadBalancerIP: yourStaticIP
+  loadBalancerIP: {{ static_ip }}
   ports:
   - port: 80
     targetPort: 80
