@@ -189,7 +189,7 @@
 
     - name: Create a VM
       azure_rm_virtualmachine:
-        resource_group: "{{ resource_group }}""
+        resource_group: "{{ resource_group }}"
         name: prom-server
         vm_size: Standard_A2_v2
         location: switzerlandnorth
