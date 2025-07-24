@@ -61,12 +61,19 @@
             primary: true
 
         security_group: Ansible-Control-Node-nsg
-    - name: Generate SSH key pair for VM access
+    - name: Generate SSH key pair for AKS access
       ansible.builtin.openssh_keypair:
         path: /home/adcash/.ssh/id_rsa
         type: rsa
         size: 4096
         mode: '0600'
+    - name: Get public SSH key
+      shell: cat /home/adcash/.ssh/id_rsa.pub
+      register: ssh_key_cat
+      changed_when: false
+
+    - set_fact:
+        ssh_key: "{{ ssh_key_cat.stdout }}"
 
     - name: Create a managed Azure Container Services (AKS) cluster
       vars:
@@ -74,7 +81,7 @@
         location: switzerlandnorth
         aks_name: gandalfCluster
         username: adcash
-        ssh_key: "{{ lookup('file', '/home/adcash/.ssh/id_rsa.pub') }}"
+        ssh_key: "{{ ssh_key }}"
         client_id: "${{ secrets.AZURE_CREDENTIALS.client_id }}"
         client_secret: "${{ secrets.AZURE_CREDENTIALS.client_secret }}"
         aks_version: 1.33.1
