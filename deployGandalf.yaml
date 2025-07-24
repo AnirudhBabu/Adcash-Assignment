@@ -187,6 +187,13 @@
     - set_fact:
         prom_ssh_key: "{{ ssh_key_prom.stdout }}"
     
+    - name: Lookup subnet details
+      azure_rm_subnet_info:
+        resource_group: Adcash_Assignment
+        name: nodeAppSubnet
+        virtual_network_name: Ansible-Control-Node-vnet
+      register: subnet_result
+
     - name: Create NIC (no public IP)
       azure_rm_networkinterface:
         name: prom-nic
@@ -194,8 +201,9 @@
         location: switzerlandnorth
         ip_configurations:
           - name: ipconfig1
-            subnet_name: nodeAppSubnet
-            virtual_network_name: Ansible-Control-Node-vnet
+            subnet_id: "{{ subnet_result.subnets[0].id }}"
+            private_ip_allocation_method: Dynamic
+
 
     - name: Create a VM
       azure_rm_virtualmachine:
