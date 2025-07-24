@@ -158,14 +158,19 @@
 
     - name: Render service manifest with correct values
       template:
-        src: /home/adcash/adcash-assignment/service.yaml.j2
-        dest: /home/adcash/adcash-assignment/service.yaml
+        src: ./service.yaml.j2
+        dest: ./service.yaml
+
+    - name: Render deployment manifest with correct values
+      template:
+        src: ./deployment.yaml.j2
+        dest: ./deployment.yaml
 
     - name: Apply Kubernetes Deployment
-      shell: kubectl apply -f /home/adcash/adcash-assignment/{{ deployment_manifest }}
+      shell: kubectl apply -f ./{{ deployment_manifest }}
 
     - name: Apply Kubernetes Service
-      shell: kubectl apply -f /home/adcash/adcash-assignment/{{ service_manifest }}
+      shell: kubectl apply -f ./{{ service_manifest }}
 
     - name: Wait for Gandalf pod to be live
       shell: |
