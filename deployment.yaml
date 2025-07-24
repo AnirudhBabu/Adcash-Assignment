@@ -14,6 +14,8 @@ spec:
     spec:
       containers:
       - name: gandalf
-        image: yourregistry/gandalf-app:latest
+        image: ghcr.io/anirudhbabu/Adcash-Assignment/gandalf-app:latest
+        imagePullSecrets:
+          - name: ghcr-secret
         ports:
         - containerPort: 80
