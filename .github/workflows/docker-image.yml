@@ -52,7 +52,7 @@ jobs:
           
     - name: Run Ansible Playbook
       run: |
-        ansible-playbook ../../deploy-gandalf.yaml -e "image_tag=${{ github.sha }}"
+        ansible-playbook ../../../deploy-gandalf.yaml -e "image_tag=${{ github.sha }}"
 
     - name: Trigger Kubernetes Redeploy
       run: |
