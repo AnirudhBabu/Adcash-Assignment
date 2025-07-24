@@ -7,7 +7,9 @@ on:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
-
+    env:
+      CLIENT_ID: ${{ secrets.AZURE_CREDENTIALS_CLIENT_ID }}
+      CLIENT_SECRET: ${{ secrets.AZURE_CREDENTIALS_CLIENT_SECRET }}
     steps:
     - name: Checkout Code
       uses: actions/checkout@v4
@@ -58,10 +60,10 @@ jobs:
 
     - name: Add control VM to known hosts
       run: ssh-keyscan -H 74.161.160.100 >> ~/.ssh/known_hosts
-      
+
     - name: Run Ansible Playbook
       run: |
-        ansible-playbook -i inventory.ini deployGandalf.yaml -e "image_tag=${{ github.sha }}"
+        ansible-playbook -i inventory.ini deployGandalf.yaml -e "image_tag=${{ github.sha }} client_id=$CLIENT_ID client_secret=$CLIENT_SECRET"
 
     - name: Trigger Kubernetes Redeploy
       run: |
