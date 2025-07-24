@@ -49,13 +49,16 @@ jobs:
           --resource-group Adcash_Assignment \
           --name GandalfCluster \
           --overwrite-existing
-
+          
     - name: Setup SSH key for Ansible
       run: |
         mkdir -p ~/.ssh/
         echo "${{ secrets.VM_SSH_KEY }}" > ~/.ssh/id_rsa
         chmod 600 ~/.ssh/id_rsa
-          
+
+    - name: Add control VM to known hosts
+      run: ssh-keyscan -H 74.161.160.100 >> ~/.ssh/known_hosts
+      
     - name: Run Ansible Playbook
       run: |
         ansible-playbook -i inventory.ini deployGandalf.yaml -e "image_tag=${{ github.sha }}"
