@@ -54,6 +54,7 @@
         type: rsa
         size: 4096
         mode: '0600'
+
     - name: Get public SSH key
       shell: cat /home/adcash/.ssh/id_rsa.pub
       register: ssh_key_cat
@@ -166,3 +167,118 @@
       until: rollout_status.stdout.find("successfully rolled out") != -1
       retries: 5
       delay: 5
+
+- name: Deploy and configure a Prometheus Server
+  hosts: control
+  connection: ssh
+  tasks:
+    - name: Generate SSH key pair for Prometheus VM
+      community.crypto.openssh_keypair:
+        path: /home/adcash/.ssh/prometheus_id_rsa
+        type: rsa
+        size: 4096
+        mode: '0600'
+
+    - name: Get public SSH key
+      shell: cat /home/adcash/.ssh/prometheus_id_rsa.pub
+      register: ssh_key_prom
+      changed_when: false
+
+    - set_fact:
+        prom_ssh_key: "{{ ssh_key_prom.stdout }}"
+
+    - name: Create a VM
+      azure_rm_virtualmachine:
+        resource_group: {{ resource_group }}
+        name: prom-server
+        vm_size: Standard_A2_v2
+        admin_username: promSnoop
+        ssh_password_enabled: false
+        ssh_public_keys:
+          - path: /home/promSnoop/.ssh/prometheus_id_rsa
+            key_data: "{{ prom_ssh_key }}"
+        image:
+          offer: 0001-com-ubuntu-server-jammy
+          publisher: Canonical
+          sku: 22_04-lts
+          version: latest
+
+    - name: Install Prometheus prerequisites
+      become: true
+      apt:
+        update_cache: yes
+        name: 
+          - wget
+          - tar
+          - curl
+
+    - name: Download Prometheus tarball
+      become: true
+      get_url:
+        url: https://github.com/prometheus/prometheus/releases/download/v2.48.1/prometheus-2.48.1.linux-amd64.tar.gz
+        dest: /tmp/prometheus.tar.gz
+
+    - name: Extract Prometheus binaries
+      become: true
+      unarchive:
+        src: /tmp/prometheus.tar.gz
+        dest: /opt/
+        remote_src: yes
+
+    - name: Create Prometheus user & directories
+      become: true
+      ansible.builtin.user:
+        name: prometheus
+        shell: /sbin/nologin
+
+    - name: Setup Prometheus folders & move binaries
+      become: true
+      shell: |
+        mv /opt/prometheus-2.48.1.linux-amd64/prometheus /usr/local/bin/
+        mv /opt/prometheus-2.48.1.linux-amd64/promtool /usr/local/bin/
+        mkdir -p /etc/prometheus /var/lib/prometheus
+        mv /opt/prometheus-2.48.1.linux-amd64/consoles /etc/prometheus/
+        mv /opt/prometheus-2.48.1.linux-amd64/console_libraries /etc/prometheus/
+
+    - name: Create Prometheus config file
+      become: true
+      copy:
+        dest: /etc/prometheus/prometheus.yml
+        content: |
+          global:
+            scrape_interval: 15s
+          scrape_configs:
+            - job_name: 'gandalf_scraper'
+              static_configs:
+                - targets: ['{{ static_ip }}:80']
+              metrics_path: /metrics
+
+    - name: Create systemd service for Prometheus
+      become: true
+      copy:
+        dest: /etc/systemd/system/prometheus.service
+        content: |
+          [Unit]
+          Description=Prometheus Monitoring
+          Wants=network-online.target
+          After=network-online.target
+
+          [Service]
+          User=prometheus
+          ExecStart=/usr/local/bin/prometheus \
+            --config.file=/etc/prometheus/prometheus.yml \
+            --storage.tsdb.path=/var/lib/prometheus \
+            --web.console.templates=/etc/prometheus/consoles \
+            --web.console.libraries=/etc/prometheus/console_libraries
+          Restart=always
+
+          [Install]
+          WantedBy=multi-user.target
+
+    - name: Reload systemd and start Prometheus
+      become: true
+      shell: |
+        systemctl daemon-reload
+        systemctl enable prometheus
+        systemctl start prometheus
+
