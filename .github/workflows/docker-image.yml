@@ -49,10 +49,15 @@ jobs:
           --resource-group Adcash_Assignment \
           --name GandalfCluster \
           --overwrite-existing
+
+    - name: Setup SSH key for Ansible
+      run: |
+        echo "${{ secrets.VM_SSH_KEY }}" > ~/.ssh/id_rsa
+        chmod 600 ~/.ssh/id_rsa
           
     - name: Run Ansible Playbook
       run: |
-        ansible-playbook ./deployGandalf.yaml -e "image_tag=${{ github.sha }}"
+        ansible-playbook -i inventory.ini deployGandalf.yaml -e "image_tag=${{ github.sha }}"
 
     - name: Trigger Kubernetes Redeploy
       run: |
