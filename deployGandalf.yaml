@@ -186,6 +186,16 @@
 
     - set_fact:
         prom_ssh_key: "{{ ssh_key_prom.stdout }}"
+    
+    - name: Create NIC (no public IP)
+      azure_rm_networkinterface:
+        name: prom-nic
+        resource_group: Adcash_Assignment
+        location: switzerlandnorth
+        ip_configurations:
+          - name: ipconfig1
+            subnet_name: nodeAppSubnet
+            virtual_network_name: Ansible-Control-Node-vnet
 
     - name: Create a VM
       azure_rm_virtualmachine:
@@ -194,6 +204,7 @@
         vm_size: Standard_A2_v2
         location: switzerlandnorth
         admin_username: promSnoop
+        network_interfaces: prom-nic
         ssh_password_enabled: false
         ssh_public_keys:
           - path: /home/promSnoop/.ssh/prometheus_id_rsa
