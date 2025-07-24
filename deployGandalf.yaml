@@ -47,19 +47,6 @@
         security_group: Ansible-Control-Node-nsg
         state: present
 
-    - name: Create virtual network interface card
-      azure_rm_networkinterface:
-        resource_group: Adcash_Assignment
-        name: myNIC
-        virtual_network: Ansible-Control-Node-vnet
-        subnet: nodeAppSubnet
-        location: switzerlandnorth
-        ip_configurations:
-          - name: ipconfig1
-            public_ip_address:
-              name: gandalfIP
-            primary: true
-
         security_group: Ansible-Control-Node-nsg
     - name: Generate SSH key pair for AKS access
       ansible.builtin.openssh_keypair:
