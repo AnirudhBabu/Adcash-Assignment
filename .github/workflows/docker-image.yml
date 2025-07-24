@@ -10,6 +10,7 @@ jobs:
     env:
       CLIENT_ID: ${{ secrets.AZURE_CREDENTIALS_CLIENT_ID }}
       CLIENT_SECRET: ${{ secrets.AZURE_CREDENTIALS_CLIENT_SECRET }}
+      GHCR_PAT: ${{ secrets.GHCR_PAT }}
     steps:
     - name: Checkout Code
       uses: actions/checkout@v4
@@ -63,7 +64,7 @@ jobs:
 
     - name: Run Ansible Playbook
       run: |
-        ansible-playbook -i inventory.ini deployGandalf.yaml -e "image_tag=${{ github.sha }} client_id=$CLIENT_ID client_secret=$CLIENT_SECRET"
+        ansible-playbook -i inventory.ini deployGandalf.yaml -e "image_tag=${{ github.sha }} client_id=$CLIENT_ID client_secret=$CLIENT_SECRET GHCR_PAT=$GHCR_PAT"
 
     - name: Trigger Kubernetes Redeploy
       run: |
