@@ -31,3 +31,11 @@ node_gandalf_request_total{method="GET",path="/gandalf",status_code="200"} 10
 # HELP node_colombo_request_total The total number of GET requests received at /colombo
 # TYPE node_colombo_request_total counter
 node_colombo_request_total{method="GET",path="/colombo",status_code="200"} 13
+```
+
+## 📊 Resources visualization
+Below you can find a neatly arranged resource diagram straight from Azure, showing the resources used. More details about all resources seen here can be seen in `deployGandalf.yaml`:
+
+![A diagram showing the resources utilized in the deployment of this repository](https://github.com/AnirudhBabu/Adcash-Assignment/blob/51a6be59ac082405cd7a57808d5f208655f0734f/Adcash_Assignment.png)
+
+
