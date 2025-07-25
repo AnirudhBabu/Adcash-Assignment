@@ -59,9 +59,11 @@
       shell: |
         mv /opt/prometheus-2.48.1.linux-amd64/prometheus /usr/local/bin/
         mv /opt/prometheus-2.48.1.linux-amd64/promtool /usr/local/bin/
-        mkdir -p /etc/prometheus /var/lib/prometheus
-        mv /opt/prometheus-2.48.1.linux-amd64/consoles /etc/prometheus/
-        mv /opt/prometheus-2.48.1.linux-amd64/console_libraries /etc/prometheus/
+        mkdir -p /etc/prometheus/consoles /etc/prometheus/console_libraries /var/lib/prometheus
+        rsync -a /opt/prometheus-2.48.1.linux-amd64/consoles/ /etc/prometheus/consoles/
+        rsync -a /opt/prometheus-2.48.1.linux-amd64/console_libraries/ /etc/prometheus/console_libraries/
+      args:
+        executable: /bin/bash
 
     - name: Create Prometheus config file
       copy:
