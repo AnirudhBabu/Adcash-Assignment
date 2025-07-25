@@ -74,7 +74,7 @@ jobs:
 
       - name: Configure Prometheus Server
         run: |
-          ansible-playbook -i inventory.ini configurePrometheus.yaml"
+          ansible-playbook -i inventory.ini configurePrometheus.yaml
 
       - name: Trigger Kubernetes Redeploy
         run: |
