@@ -239,8 +239,11 @@
         resource_group: Adcash_Assignment
         name: prometheusNIC
         virtual_network: prometheus-vnet
+        location: swedencentral
         subnet: prom-subnet
-        public_ip_name: promPublicIP
+        ip_configurations:
+          - name: ipconfig1
+            public_ip_name: promPublicIP
         security_group: prometheus-nsg
 
     - name: Create a VM
