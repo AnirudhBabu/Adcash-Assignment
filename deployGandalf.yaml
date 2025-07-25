@@ -218,7 +218,7 @@
         content: "{{ output_ip_address_prom.state.ip_address }}"
         dest: /tmp/prometheus_ip.txt
 
-    - name: Create Network Security Group that allows SSH and outbound HTTP
+    - name: Create Network Security Group that allows SSH and HTTP
       azure_rm_securitygroup:
         resource_group: Adcash_Assignment
         name: prometheus-nsg
@@ -238,6 +238,15 @@
             source_port_range: '*'
             destination_address_prefix: '{{ aks_public_ip }}'
             destination_port_range: '80'
+          - name: allow_inbound_http
+            access: Allow
+            direction: Inbound
+            protocol: TCP
+            priority: 1020
+            source_address_prefix: '*'
+            source_port_range: '*'
+            destination_address_prefix: '{{ prom_public_ip  }}'
+            destination_port_range: '9090'
 
     - name: Create virtual network interface card
       azure_rm_networkinterface:
