@@ -1,0 +1,111 @@
+- name: Add prom-server to inventory
+  hosts: control
+  tasks:
+    - name: Read Prometheus public IP
+      slurp:
+        src: /tmp/prometheus_ip.txt
+      register: prom_ip_raw
+
+    - set_fact:
+        prom_public_ip: "{{ prom_ip_raw['content'] | b64decode }}"
+
+    - name: Add prom-server to inventory dynamically
+      ansible.builtin.add_host:
+        name: prom-server
+        ansible_host: "{{ prom_public_ip }}"
+        ansible_user: promSnoop
+        ansible_private_key_file: ~/.ssh/prometheus_id_rsa
+        ansible_ssh_common_args: >-
+          -o StrictHostKeyChecking=no
+          -o UserKnownHostsFile=/dev/null
+        groups: prometheus
+
+    - name: Trust prom-server host key
+      ansible.builtin.known_hosts:
+        name: "{{ prom_public_ip }}"
+        key: "{{ lookup('pipe', 'ssh-keyscan {{ prom_public_ip }}') }}"
+        path: "~/.ssh/known_hosts"
+      
+- name: Configure VM to be a Prometheus Server
+  hosts: prom-server
+  connection: ssh
+  become: true
+  tasks:
+    - name: Install Prometheus prerequisites
+      apt:
+        update_cache: yes
+        name:
+          - wget
+          - tar
+          - curl
+      delegate_to: prom-server
+
+    - name: Download Prometheus tarball
+      get_url:
+        url: https://github.com/prometheus/prometheus/releases/download/v2.48.1/prometheus-2.48.1.linux-amd64.tar.gz
+        dest: /tmp/prometheus.tar.gz
+      delegate_to: prom-server
+
+    - name: Extract Prometheus binaries
+      unarchive:
+        src: /tmp/prometheus.tar.gz
+        dest: /opt/
+        remote_src: yes
+      delegate_to: prom-server
+
+    - name: Create Prometheus user & directories
+      ansible.builtin.user:
+        name: prometheus
+        shell: /sbin/nologin
+      delegate_to: prom-server
+
+    - name: Setup Prometheus folders & move binaries
+      shell: |
+        mv /opt/prometheus-2.48.1.linux-amd64/prometheus /usr/local/bin/
+        mv /opt/prometheus-2.48.1.linux-amd64/promtool /usr/local/bin/
+        mkdir -p /etc/prometheus /var/lib/prometheus
+        mv /opt/prometheus-2.48.1.linux-amd64/consoles /etc/prometheus/
+        mv /opt/prometheus-2.48.1.linux-amd64/console_libraries /etc/prometheus/
+      delegate_to: prom-server
+
+    - name: Create Prometheus config file
+      copy:
+        dest: /etc/prometheus/prometheus.yml
+        content: |
+          global:
+            scrape_interval: 15s
+          scrape_configs:
+            - job_name: 'gandalf_scraper'
+              static_configs:
+                - targets: ['{{ static_ip }}:80']
+              metrics_path: /metrics
+      delegate_to: prom-server
+
+    - name: Create systemd service for Prometheus
+      copy:
+        dest: /etc/systemd/system/prometheus.service
+        content: |
+          [Unit]
+          Description=Prometheus Monitoring
+          Wants=network-online.target
+          After=network-online.target
+
+          [Service]
+          User=prometheus
+          ExecStart=/usr/local/bin/prometheus \
+            --config.file=/etc/prometheus/prometheus.yml \
+            --storage.tsdb.path=/var/lib/prometheus \
+            --web.console.templates=/etc/prometheus/consoles \
+            --web.console.libraries=/etc/prometheus/console_libraries
+          Restart=always
+
+          [Install]
+          WantedBy=multi-user.target
+      delegate_to: prom-server
+
+    - name: Reload systemd and start Prometheus
+      shell: |
+        systemctl daemon-reload
+        systemctl enable prometheus
+        systemctl start prometheus
+      delegate_to: prom-server
