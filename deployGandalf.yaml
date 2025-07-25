@@ -186,13 +186,6 @@
 
     - set_fact:
         prom_ssh_key: "{{ ssh_key_prom.stdout }}"
-    
-    - name: Lookup subnet details
-      azure_rm_subnet_info:
-        resource_group: Adcash_Assignment
-        name: nodeAppSubnet
-        virtual_network_name: Ansible-Control-Node-vnet
-      register: subnet_result
 
     - name: Create NIC (no public IP)
       azure_rm_networkinterface:
@@ -222,10 +215,21 @@
           publisher: Canonical
           sku: 22_04-lts
           version: latest
+      register: prom_vm
+
+    - name: Add prom-server to inventory dynamically
+      add_host:
+        name: prom-server
+        ansible_host: "{{ prom_vm.instance.network_interface[0].private_ip_address }}"
+        ansible_user: promSnoop
+        ansible_private_key_file: /home/adcash/.ssh/prometheus_id_rsa
+        groups: prometheus
 
 
 - name: Configure VM to be a Prometheus Server
-  hosts: 
+  hosts: prometheus
+  connection: ssh
+  become: true
     - name: Install Prometheus prerequisites
       become: true
       apt:
