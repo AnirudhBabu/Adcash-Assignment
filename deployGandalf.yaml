@@ -265,12 +265,14 @@
           version: latest
       register: prom_vm
 
-    - name: Add prom-server to inventory dynamically
-      add_host:
+    - name: Add prom-server to inventory dynamically with jump host
+      ansible.builtin.add_host:
         name: prom-server
         ansible_host: "{{ output_ip_address_prom.state.ip_address }}"
         ansible_user: promSnoop
         ansible_private_key_file: /home/adcash/.ssh/prometheus_id_rsa
+        ansible_ssh_common_args: >-
+          -o ProxyJump=adcash@74.161.160.100
         groups: prometheus
 
     - name: Trust prom-server host key
