@@ -24,5 +24,10 @@ This repo contains a complete solution for the DevOps Engineering assignment fro
 Prometheus scrapes metrics provided by the web app at [http://172.161.147.92/metrics](http://172.161.147.92/metrics):
 
 ```text
-node_gandalf_request_total{method="GET",path="/gandalf",status_code="200"} 11
-node_colombo_request_total{method="GET",path="/colombo",status_code="200"} 9
+# HELP node_gandalf_request_total The total number of GET requests received at /gandalf
+# TYPE node_gandalf_request_total counter
+node_gandalf_request_total{method="GET",path="/gandalf",status_code="200"} 10
+
+# HELP node_colombo_request_total The total number of GET requests received at /colombo
+# TYPE node_colombo_request_total counter
+node_colombo_request_total{method="GET",path="/colombo",status_code="200"} 13
