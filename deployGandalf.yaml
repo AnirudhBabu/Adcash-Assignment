@@ -207,11 +207,11 @@
         allocation_method: Static
         sku: Standard
         name: promPublicIP
-      register: output_ip_address
+      register: output_ip_address_prom
     
     - name: Public IP of VM
       debug:
-        msg: "The public IP of prometheus server is {{ output_ip_address.state.ip_address }}."
+        msg: "The public IP of prometheus server is {{ output_ip_address_prom.state.ip_address }}."
 
     - name: Create Network Security Group that allows SSH and outbound HTTP
       azure_rm_securitygroup:
@@ -268,15 +268,14 @@
     - name: Add prom-server to inventory dynamically
       add_host:
         name: prom-server
-        ansible_host: "{{ output_ip_address.state.ip_address }}"
+        ansible_host: "{{ output_ip_address_prom.state.ip_address }}"
         ansible_user: promSnoop
         ansible_private_key_file: /home/adcash/.ssh/prometheus_id_rsa
         groups: prometheus
 
     - name: Add prom-server to known_hosts
       ansible.builtin.shell: |
-        ssh-keyscan -H {{ output_ip_address.state.ip_address }} >> ~/.ssh/known_hosts
-      delegate_to: control
+        ssh-keyscan -H {{ output_ip_address_prom.state.ip_address }} >> ~/.ssh/known_hosts
 
 
 - name: Configure VM to be a Prometheus Server
