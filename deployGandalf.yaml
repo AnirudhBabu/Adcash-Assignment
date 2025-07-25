@@ -187,7 +187,7 @@
     - set_fact:
         prom_ssh_key: "{{ ssh_key_prom.stdout }}"
 
-     - name: Create virtual network
+    - name: Create virtual network
       azure_rm_virtualnetwork:
         resource_group: Adcash_Assignment
         location: swedencentral
