@@ -47,7 +47,6 @@
         security_group: Ansible-Control-Node-nsg
         state: present
 
-        security_group: Ansible-Control-Node-nsg
     - name: Generate SSH key pair for AKS access
       ansible.builtin.openssh_keypair:
         path: /home/adcash/.ssh/id_rsa
@@ -206,6 +205,7 @@
         resource_group: Adcash_Assignment
         location: swedencentral
         allocation_method: Static
+        sku: Standard
         name: promPublicIP
       register: output_ip_address
     
