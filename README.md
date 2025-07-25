@@ -1,6 +1,6 @@
 # 🧠 Adcash Assignment – SRE Engineering Challenge
 
-This repo contains a complete solution for the DevOps Engineering assignment from Adcash. It includes a Node.js application with Prometheus metric exports, infrastructure configuration via Ansible, and container orchestration using Jinja2-based Kubernetes templates.
+This repo contains a complete solution for the DevOps Engineering assignment from Adcash. I have included a Node.js application with Prometheus metric exports (built-in to the web app), infrastructure configuration via Ansible, and container orchestration using Jinja2-based Kubernetes templates.
 
 ## 📦 Contents
 
@@ -21,7 +21,7 @@ This repo contains a complete solution for the DevOps Engineering assignment fro
 
 ## 📊 Metric Examples
 
-Prometheus scrapes metrics like:
+Prometheus scrapes metrics provided by the web app at [http://172.161.147.92/metrics](http://172.161.147.92/metrics):
 
 ```text
 node_gandalf_request_total{method="GET",path="/gandalf",status_code="200"} 11
