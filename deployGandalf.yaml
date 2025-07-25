@@ -273,6 +273,8 @@
         ansible_private_key_file: /home/adcash/.ssh/prometheus_id_rsa
         ansible_ssh_common_args: >-
           -o ProxyJump=adcash@74.161.160.100
+          -o StrictHostKeyChecking=no
+          -o UserKnownHostsFile=/dev/null
         groups: prometheus
 
     - name: Trust prom-server host key
