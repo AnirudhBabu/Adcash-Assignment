@@ -272,7 +272,6 @@
 - name: Configure VM to be a Prometheus Server
   hosts: control
   connection: ssh
-  become: true
   tasks:
     - name: Add prom-server to inventory dynamically
       ansible.builtin.add_host:
@@ -291,17 +290,8 @@
         key: "{{ lookup('pipe', 'ssh-keyscan {{ prom_public_ip }}') }}"
         path: "~/.ssh/known_hosts"
 
-    - name: Confirm SSH key exists on control VM before delegation
-      stat:
-        path: /home/adcash/.ssh/prometheus_id_rsa
-      delegate_to: vm-control
-      register: key_check
-
-    - debug:
-        var: key_check.stat.exists
-
-
     - name: Install Prometheus prerequisites
+      become: true
       apt:
         update_cache: yes
         name: 
@@ -311,12 +301,14 @@
       delegate_to: prom-server
 
     - name: Download Prometheus tarball
+      become: true
       get_url:
         url: https://github.com/prometheus/prometheus/releases/download/v2.48.1/prometheus-2.48.1.linux-amd64.tar.gz
         dest: /tmp/prometheus.tar.gz
       delegate_to: prom-server
 
     - name: Extract Prometheus binaries
+      become: true
       unarchive:
         src: /tmp/prometheus.tar.gz
         dest: /opt/
@@ -324,12 +316,14 @@
       delegate_to: prom-server
 
     - name: Create Prometheus user & directories
+      become: true
       ansible.builtin.user:
         name: prometheus
         shell: /sbin/nologin
       delegate_to: prom-server
 
     - name: Setup Prometheus folders & move binaries
+      become: true
       shell: |
         mv /opt/prometheus-2.48.1.linux-amd64/prometheus /usr/local/bin/
         mv /opt/prometheus-2.48.1.linux-amd64/promtool /usr/local/bin/
@@ -339,6 +333,7 @@
       delegate_to: prom-server
 
     - name: Create Prometheus config file
+      become: true
       copy:
         dest: /etc/prometheus/prometheus.yml
         content: |
@@ -352,6 +347,7 @@
       delegate_to: prom-server
 
     - name: Create systemd service for Prometheus
+      become: true
       copy:
         dest: /etc/systemd/system/prometheus.service
         content: |
@@ -375,6 +371,7 @@
         
 
     - name: Reload systemd and start Prometheus
+      become: true
       shell: |
         systemctl daemon-reload
         systemctl enable prometheus
