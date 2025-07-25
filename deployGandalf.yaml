@@ -234,27 +234,18 @@
             direction: Outbound
             protocol: TCP
             priority: 1010
-            source_address_prefix: '*'
-            source_port_range: '*'
-            destination_address_prefix: '*'
             destination_port_range: '80'
           - name: allow_inbound_to_prom_port
             access: Allow
             direction: Inbound
             protocol: TCP
             priority: 1020
-            source_address_prefix: '*'
-            source_port_range: '*'
-            destination_address_prefix: '{{ output_ip_address_prom.state.ip_address }}'
             destination_port_range: '9090'
           - name: allow_inbound_http
             access: Allow
             direction: Inbound
             protocol: TCP
             priority: 1025
-            source_address_prefix: '*'
-            source_port_range: '*'
-            destination_address_prefix: '{{ output_ip_address_prom.state.ip_address }}'
             destination_port_range: '80'
 
     - name: Create virtual network interface card
