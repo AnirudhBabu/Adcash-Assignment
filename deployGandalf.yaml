@@ -251,7 +251,7 @@
             access: Allow
             direction: Inbound
             protocol: TCP
-            priority: 1020
+            priority: 1025
             source_address_prefix: '*'
             source_port_range: '*'
             destination_address_prefix: '{{ output_ip_address_prom.state.ip_address }}'
