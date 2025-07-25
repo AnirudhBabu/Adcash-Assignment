@@ -74,7 +74,7 @@
           scrape_configs:
             - job_name: 'gandalf_scraper'
               static_configs:
-                - targets: ['{{ prom_public_ip }}:80']
+                - targets: ['172.161.147.92:80']
               metrics_path: /metrics
 
     - name: Create systemd service for Prometheus
