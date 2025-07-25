@@ -276,8 +276,9 @@
     - name: Add prom-server to known_hosts
       ansible.builtin.shell: |
         ssh-keyscan -H {{ output_ip_address.state.ip_address }} >> ~/.ssh/known_hosts
+      delegate_to: control
 
-        
+
 - name: Configure VM to be a Prometheus Server
   hosts: prometheus
   connection: ssh
