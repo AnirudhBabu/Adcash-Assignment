@@ -230,6 +230,7 @@
   hosts: prometheus
   connection: ssh
   become: true
+  tasks:
     - name: Install Prometheus prerequisites
       become: true
       apt:
