@@ -38,26 +38,22 @@
           - wget
           - tar
           - curl
-      delegate_to: prom-server
-
+      
     - name: Download Prometheus tarball
       get_url:
         url: https://github.com/prometheus/prometheus/releases/download/v2.48.1/prometheus-2.48.1.linux-amd64.tar.gz
         dest: /tmp/prometheus.tar.gz
-      delegate_to: prom-server
 
     - name: Extract Prometheus binaries
       unarchive:
         src: /tmp/prometheus.tar.gz
         dest: /opt/
         remote_src: yes
-      delegate_to: prom-server
 
     - name: Create Prometheus user & directories
       ansible.builtin.user:
         name: prometheus
         shell: /sbin/nologin
-      delegate_to: prom-server
 
     - name: Setup Prometheus folders & move binaries
       shell: |
@@ -66,7 +62,6 @@
         mkdir -p /etc/prometheus /var/lib/prometheus
         mv /opt/prometheus-2.48.1.linux-amd64/consoles /etc/prometheus/
         mv /opt/prometheus-2.48.1.linux-amd64/console_libraries /etc/prometheus/
-      delegate_to: prom-server
 
     - name: Create Prometheus config file
       copy:
@@ -77,9 +72,8 @@
           scrape_configs:
             - job_name: 'gandalf_scraper'
               static_configs:
-                - targets: ['{{ static_ip }}:80']
+                - targets: ['{{ prom_public_ip }}:80']
               metrics_path: /metrics
-      delegate_to: prom-server
 
     - name: Create systemd service for Prometheus
       copy:
@@ -101,11 +95,9 @@
 
           [Install]
           WantedBy=multi-user.target
-      delegate_to: prom-server
 
     - name: Reload systemd and start Prometheus
       shell: |
         systemctl daemon-reload
         systemctl enable prometheus
         systemctl start prometheus
-      delegate_to: prom-server
