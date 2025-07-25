@@ -256,7 +256,7 @@
         network_interfaces: prometheusNIC
         ssh_password_enabled: false
         ssh_public_keys:
-          - path: /home/promSnoop/.ssh/prometheus_id_rsa
+          - path: /home/promSnoop/.ssh/authorized_keys
             key_data: "{{ prom_ssh_key }}"
         image:
           offer: 0001-com-ubuntu-server-jammy
