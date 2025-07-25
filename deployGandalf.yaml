@@ -168,7 +168,7 @@
       retries: 5
       delay: 5
 
-- name: Deploy and configure a Prometheus Server
+- name: Deploy a VM for Prometheus Server
   hosts: control
   connection: ssh
   tasks:
@@ -204,7 +204,6 @@
         ip_configurations:
           - name: ipconfig1
             private_ip_allocation_method: Dynamic
-            public_ip_allocation_method: Disabled
 
     - name: Create a VM
       azure_rm_virtualmachine:
@@ -224,6 +223,9 @@
           sku: 22_04-lts
           version: latest
 
+
+- name: Configure VM to be a Prometheus Server
+  hosts: 
     - name: Install Prometheus prerequisites
       become: true
       apt:
