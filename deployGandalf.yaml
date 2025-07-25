@@ -283,13 +283,10 @@
           -o UserKnownHostsFile=/dev/null
         groups: prometheus
 
-    - name: Show contents of inventory.ini
-      ansible.builtin.shell: cat ~/adcash-assignment/inventory.ini
-      register: inventory_contents
-
-    - name: Display inventory file contents
+    - name: Show all hosts
       debug:
-        var: inventory_contents.stdout
+        var: groups['all']
+
 
 
     - name: Trust prom-server host key
