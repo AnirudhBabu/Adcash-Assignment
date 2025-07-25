@@ -234,34 +234,34 @@
         public_ip_name: promPublicIP
         security_group: prometheus-nsg
 
-      - name: Create a VM
-        azure_rm_virtualmachine:
-          resource_group: Adcash_Assignment
-          name: prom-server
-          vm_size: Standard_A2_v2
-          location: swedencentral
-          admin_username: promSnoop
-          network_interfaces: prometheusNIC
-          ssh_password_enabled: false
-          ssh_public_keys:
-            - path: /home/promSnoop/.ssh/prometheus_id_rsa
-              key_data: "{{ prom_ssh_key }}"
-          image:
-            offer: 0001-com-ubuntu-server-jammy
-            publisher: Canonical
-            sku: 22_04-lts
-            version: latest
-        register: prom_vm
+    - name: Create a VM
+      azure_rm_virtualmachine:
+        resource_group: Adcash_Assignment
+        name: prom-server
+        vm_size: Standard_A2_v2
+        location: swedencentral
+        admin_username: promSnoop
+        network_interfaces: prometheusNIC
+        ssh_password_enabled: false
+        ssh_public_keys:
+          - path: /home/promSnoop/.ssh/prometheus_id_rsa
+            key_data: "{{ prom_ssh_key }}"
+        image:
+          offer: 0001-com-ubuntu-server-jammy
+          publisher: Canonical
+          sku: 22_04-lts
+          version: latest
+      register: prom_vm
 
-      - name: Add prom-server to inventory dynamically
-        add_host:
-          name: prom-server
-          ansible_host: "{{ output_ip_address.state.ip_address }}"
-          ansible_user: promSnoop
-          ansible_private_key_file: /home/adcash/.ssh/prometheus_id_rsa
-          groups: prometheus
+    - name: Add prom-server to inventory dynamically
+      add_host:
+        name: prom-server
+        ansible_host: "{{ output_ip_address.state.ip_address }}"
+        ansible_user: promSnoop
+        ansible_private_key_file: /home/adcash/.ssh/prometheus_id_rsa
+        groups: prometheus
 
- - name: Configure VM to be a Prometheus Server
+- name: Configure VM to be a Prometheus Server
   hosts: prometheus
   connection: ssh
   become: true
