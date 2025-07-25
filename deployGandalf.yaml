@@ -215,7 +215,7 @@
 
     - name: Write Prometheus public IP to disk
       copy:
-        content: "{{ prom_public_ip }}"
+        content: "{{ output_ip_address_prom.state.ip_address }}"
         dest: /tmp/prometheus_ip.txt
 
 
