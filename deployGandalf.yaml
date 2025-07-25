@@ -107,7 +107,6 @@
       changed_when: false
 
 
-
 - name: Deploy GandalfApp to AKS
   hosts: control
   connection: ssh
@@ -283,6 +282,16 @@
           -o StrictHostKeyChecking=no
           -o UserKnownHostsFile=/dev/null
         groups: prometheus
+
+    - name: Show contents of inventory.ini
+      delegate_to: localhost
+      ansible.builtin.shell: cat ~/adcash-assignment/inventory.ini
+      register: inventory_contents
+
+    - name: Display inventory file contents
+      debug:
+        var: inventory_contents.stdout
+
 
     - name: Trust prom-server host key
       ansible.builtin.known_hosts:
