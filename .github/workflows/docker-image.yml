@@ -69,7 +69,7 @@ jobs:
 
       - name: Get Prometheus Private Key
         run: |
-          scp -i ~/.ssh/id_rsa adcash@74.161.160.100:/tmp/prometheus_id_rsa ~/.ssh/prometheus_id_rsa
+          scp -i ~/.ssh/id_rsa adcash@74.161.160.100:~/.ssh/prometheus_id_rsa ~/.ssh/prometheus_id_rsa
           chmod 600 ~/.ssh/prometheus_id_rsa
 
       - name: Configure Prometheus Server
