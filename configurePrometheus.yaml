@@ -65,6 +65,15 @@
       args:
         executable: /bin/bash
 
+    - name: Ensure Prometheus has ownership of tsdb directory
+      file:
+        path: /var/lib/prometheus
+        state: directory
+        owner: prometheus
+        group: prometheus
+        mode: '0755'
+        recurse: yes
+
     - name: Create Prometheus config file
       copy:
         dest: /etc/prometheus/prometheus.yml
