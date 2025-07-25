@@ -213,6 +213,10 @@
       debug:
         msg: "The public IP of prometheus server is {{ output_ip_address_prom.state.ip_address }}."
 
+    - name: Store public IP of prometheus for later
+      set_fact:
+        prom_public_ip: "{{ output_ip_address_prom.state.ip_address }}"
+
     - name: Create Network Security Group that allows SSH and outbound HTTP
       azure_rm_securitygroup:
         resource_group: Adcash_Assignment
@@ -265,29 +269,28 @@
           version: latest
       register: prom_vm
 
+- name: Configure VM to be a Prometheus Server
+  hosts: control
+  connection: ssh
+  become: true
+  tasks:
     - name: Add prom-server to inventory dynamically with jump host
       ansible.builtin.add_host:
         name: prom-server
-        ansible_host: "{{ output_ip_address_prom.state.ip_address }}"
+        ansible_host: "{{ prom_public_ip }}"
         ansible_user: promSnoop
         ansible_private_key_file: /home/adcash/.ssh/prometheus_id_rsa
         ansible_ssh_common_args: >-
-          -o ProxyJump=adcash@74.161.160.100
           -o StrictHostKeyChecking=no
           -o UserKnownHostsFile=/dev/null
         groups: prometheus
 
     - name: Trust prom-server host key
       ansible.builtin.known_hosts:
-        name: "{{ output_ip_address_prom.state.ip_address }}"
-        key: "{{ lookup('pipe', 'ssh-keyscan {{ output_ip_address_prom.state.ip_address }}') }}"
+        name: "{{ prom_public_ip }}"
+        key: "{{ lookup('pipe', 'ssh-keyscan {{ prom_public_ip }}') }}"
         path: "~/.ssh/known_hosts"
 
-- name: Configure VM to be a Prometheus Server
-  hosts: prometheus
-  connection: ssh
-  become: true
-  tasks:
     - name: Install Prometheus prerequisites
       apt:
         update_cache: yes
@@ -295,22 +298,26 @@
           - wget
           - tar
           - curl
+      delegate_to: prom-server
 
     - name: Download Prometheus tarball
       get_url:
         url: https://github.com/prometheus/prometheus/releases/download/v2.48.1/prometheus-2.48.1.linux-amd64.tar.gz
         dest: /tmp/prometheus.tar.gz
+      delegate_to: prom-server
 
     - name: Extract Prometheus binaries
       unarchive:
         src: /tmp/prometheus.tar.gz
         dest: /opt/
         remote_src: yes
+      delegate_to: prom-server
 
     - name: Create Prometheus user & directories
       ansible.builtin.user:
         name: prometheus
         shell: /sbin/nologin
+      delegate_to: prom-server
 
     - name: Setup Prometheus folders & move binaries
       shell: |
@@ -319,6 +326,7 @@
         mkdir -p /etc/prometheus /var/lib/prometheus
         mv /opt/prometheus-2.48.1.linux-amd64/consoles /etc/prometheus/
         mv /opt/prometheus-2.48.1.linux-amd64/console_libraries /etc/prometheus/
+      delegate_to: prom-server
 
     - name: Create Prometheus config file
       copy:
@@ -331,6 +339,7 @@
               static_configs:
                 - targets: ['{{ static_ip }}:80']
               metrics_path: /metrics
+      delegate_to: prom-server
 
     - name: Create systemd service for Prometheus
       copy:
@@ -352,10 +361,12 @@
 
           [Install]
           WantedBy=multi-user.target
+      delegate_to: prom-server
+        
 
     - name: Reload systemd and start Prometheus
       shell: |
         systemctl daemon-reload
         systemctl enable prometheus
         systemctl start prometheus
-
+      delegate_to: prom-server
