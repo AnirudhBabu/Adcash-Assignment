@@ -49,13 +49,13 @@
 
     - name: Generate SSH key pair for AKS access
       ansible.builtin.openssh_keypair:
-        path: /home/adcash/.ssh/id_rsa
+        path: ~/.ssh/id_rsa
         type: rsa
         size: 4096
         mode: '0600'
 
     - name: Get public SSH key
-      shell: cat /home/adcash/.ssh/id_rsa.pub
+      shell: cat ~/.ssh/id_rsa.pub
       register: ssh_key_cat
       changed_when: false
 
@@ -120,7 +120,7 @@
     - name: Clone GitHub repo
       git:
         repo: 'https://github.com/AnirudhBabu/Adcash-Assignment.git'
-        dest: '/home/adcash/adcash-assignment'
+        dest: '~/adcash-assignment'
         version: main
 
     - name: Get AKS credentials for kubectl
@@ -172,13 +172,13 @@
   tasks:
     - name: Generate SSH key pair for Prometheus VM
       community.crypto.openssh_keypair:
-        path: /home/adcash/.ssh/prometheus_id_rsa
+        path: ~/.ssh/prometheus_id_rsa
         type: rsa
         size: 4096
         mode: '0600'
 
     - name: Get public SSH key
-      shell: cat /home/adcash/.ssh/prometheus_id_rsa.pub
+      shell: cat ~/.ssh/prometheus_id_rsa.pub
       register: ssh_key_prom
       changed_when: false
 
@@ -277,17 +277,11 @@
         name: prom-server
         ansible_host: "{{ prom_public_ip }}"
         ansible_user: promSnoop
-        ansible_private_key_file: /home/adcash/.ssh/prometheus_id_rsa
+        ansible_private_key_file: ~/.ssh/prometheus_id_rsa
         ansible_ssh_common_args: >-
           -o StrictHostKeyChecking=no
           -o UserKnownHostsFile=/dev/null
         groups: prometheus
-
-    - name: Show all hosts
-      debug:
-        var: groups['all']
-
-
 
     - name: Trust prom-server host key
       ansible.builtin.known_hosts:
