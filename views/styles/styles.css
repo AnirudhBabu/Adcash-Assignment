@@ -12,9 +12,24 @@ body {
 }
 
 .retro-text {
-    font-size: 3rem;
+    font-size: 3vh;
     text-shadow: 0 0 2px #ebff08, 0 0 5px #ebff08, 0 0 7px #ebff08;
     text-align: center;
+    flex-direction: row;
+    display: flex;
+    align-items: center;
+}
+
+@media (max-width: 768px) {
+    .retro-text {
+        font-size: 2.5vw;
+        display: flex;
+        flex-wrap: wrap;
+        flex-direction: column;
+        align-items: center;
+        margin-left: 10%;
+        margin-right: 10%;
+    }
 }
 
 #content-1 {
