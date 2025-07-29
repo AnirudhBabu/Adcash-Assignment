@@ -29,26 +29,13 @@
       environment:
         PATH: ~/ansible/bin:{{ ansible_env.PATH }}
 
-    - name: Create symlink for ansible-playbook
-      ansible.builtin.file:
-        src: ~/ansible/bin/ansible-playbook
-        dest: /usr/local/bin/ansible-playbook
-        state: link
-        force: true
-
-    - name: Create symlink for ansible
-      ansible.builtin.file:
-        src: ~/ansible/bin/ansible
-        dest: /usr/local/bin/ansible
-        state: link
-        force: true
-
 
 - name: Create Azure Kubernetes Cluster to host gandalfApp
   hosts: control
   connection: ssh
   vars:
     auth_source: "cli"
+    ansible_python_interpreter: ~/ansible/bin/python
 
   tasks:
     - name: Create public IP address
@@ -217,6 +204,9 @@
 - name: Deploy a VM for Prometheus Server
   hosts: control
   connection: ssh
+  vars:
+    ansible_python_interpreter: ~/ansible/bin/python
+    
   tasks:
     - name: Generate SSH key pair for Prometheus VM
       community.crypto.openssh_keypair:
