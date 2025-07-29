@@ -47,13 +47,6 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-      - name: Set AKS Context
-        run: |
-          az aks get-credentials \
-            --resource-group Adcash_Assignment \
-            --name GandalfCluster \
-            --overwrite-existing
-
       - name: Setup SSH key for Ansible
         run: |
           mkdir -p ~/.ssh/
@@ -76,6 +69,13 @@ jobs:
         run: |
           ansible-playbook -i inventory.ini configurePrometheus.yaml
 
+      - name: Set AKS Context
+        run: |
+          az aks get-credentials \
+            --resource-group adcash-assignment \
+            --name GandalfCluster \
+            --overwrite-existing
+    
       - name: Trigger Kubernetes Redeploy
         run: |
           kubectl set image deployment/gandalf-app gandalf=$LATEST_TAG
