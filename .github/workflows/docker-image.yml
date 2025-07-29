@@ -60,7 +60,7 @@ jobs:
 
       - name: Deploy Gandalf App and Prometheus Server Infra
         run: |
-          ansible-playbook -i inventory.ini deployGandalf.yaml -e "image_tag=${{ github.sha }} AZURE_TENANT=$AZURE_TENANT AZURE_SUBSCRIPTION_ID=@AZURE_SUBSCRIPTION_ID AZURE_CLIENT_ID=$AZURE_CLIENT_ID AZURE_SECRET=$AZURE_SECRET GHCR_PAT=$GHCR_PAT static_ip=$STATIC_IP"
+          ansible-playbook -i inventory.ini deployGandalf.yaml -e "image_tag=${{ github.sha }} AZURE_TENANT=$AZURE_TENANT AZURE_SUBSCRIPTION_ID=$AZURE_SUBSCRIPTION_ID AZURE_CLIENT_ID=$AZURE_CLIENT_ID AZURE_SECRET=$AZURE_SECRET GHCR_PAT=$GHCR_PAT static_ip=$STATIC_IP"
 
       - name: Get Prometheus Private Key
         run: |
