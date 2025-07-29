@@ -20,12 +20,11 @@
 
     - name: Install Ansible and Azure CLI
       shell: |
-        sudo apt update
-        sudo apt install software-properties-common
-        sudo add-apt-repository --yes --update ppa:ansible/ansible
-        sudo apt install ansible
+        apt update
+        add-apt-repository --yes --update ppa:ansible/ansible
+        apt install ansible
         ansible-galaxy collection install azure.azcollection --force 
-        sudo pip3 install -r ~/.ansible/collections/ansible_collections/azure/azcollection/requirements.txt
+        pip3 install -r ~/.ansible/collections/ansible_collections/azure/azcollection/requirements.txt
       environment:
         PATH: /home/adcash/ansible/bin:{{ ansible_env.PATH }}
 
