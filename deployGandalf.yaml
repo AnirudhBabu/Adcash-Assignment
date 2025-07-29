@@ -18,18 +18,29 @@
           - curl
         state: present
 
-    - name: Upgrade pip
-      pip:
-        name: pip
-        executable: pip3
-        extra_args: --upgrade
+    - name: Create virtual environment
+      command: python3 -m venv ~/ansible
+      args:
+        creates: ~/ansible/bin/activate
 
-    - name: Install Ansible and Azure modules
-      pip:
-        name:
-          - ansible
-          - "ansible[azure]"
-        executable: pip3
+    - name: Install Ansible and Azure extras in virtualenv
+      command: ~/ansible/bin/pip install 'ansible[azure]'
+      environment:
+        PATH: ~/ansible/bin:{{ ansible_env.PATH }}
+
+    - name: Create symlink for ansible-playbook
+      ansible.builtin.file:
+        src: ~/ansible/bin/ansible-playbook
+        dest: /usr/local/bin/ansible-playbook
+        state: link
+        force: true
+
+    - name: Create symlink for ansible
+      ansible.builtin.file:
+        src: ~/ansible/bin/ansible
+        dest: /usr/local/bin/ansible
+        state: link
+        force: true
 
 
 - name: Create Azure Kubernetes Cluster to host gandalfApp
