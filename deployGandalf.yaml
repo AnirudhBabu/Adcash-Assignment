@@ -25,7 +25,9 @@
         creates: /home/adcash/ansible/bin/activate
 
     - name: Install Ansible and Azure extras in virtualenv
-      command: /home/adcash/ansible/bin/pip install 'ansible[azure]'
+      shell: /home/adcash/ansible/bin/pip install 'ansible[azure]'
+      args:
+        creates: /home/adcash/ansible/bin/ansible
       environment:
         PATH: /home/adcash/ansible/bin:{{ ansible_env.PATH }}
 
