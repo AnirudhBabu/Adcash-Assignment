@@ -35,7 +35,7 @@
   connection: ssh
   vars:
     auth_source: "cli"
-    ansible_python_interpreter: ~/ansible/bin/python
+    ansible_python_interpreter: /home/adcash/ansible/bin/python
 
   tasks:
     - name: Create public IP address
@@ -205,7 +205,7 @@
   hosts: control
   connection: ssh
   vars:
-    ansible_python_interpreter: ~/ansible/bin/python
+    ansible_python_interpreter: /home/adcash/ansible/bin/python
     
   tasks:
     - name: Generate SSH key pair for Prometheus VM
