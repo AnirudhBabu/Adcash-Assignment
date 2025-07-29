@@ -28,15 +28,13 @@
             ansible-galaxy collection install azure.azcollection --force
           pip3 list | grep azure-cli >/dev/null || \
             pip3 install -r ~/.ansible/collections/ansible_collections/azure/azcollection/requirements.txt --break-system-packages
-      environment:
-        PATH: /home/adcash/ansible/bin:{{ ansible_env.PATH }}
 
 
 - name: Create Azure Kubernetes Cluster to host gandalfApp
   hosts: control
   connection: ssh
   vars:
-    auth_source: env
+    auth_source: "env"
 
   tasks:
     - name: Create public IP address
