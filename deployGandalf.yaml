@@ -18,13 +18,13 @@
           - curl
         state: present
 
-    - name: Install Ansible and Azure CLI
+    - name: Install Ansible
       shell: |
         apt update
         add-apt-repository --yes --update ppa:ansible/ansible
-        apt install ansible
+        apt install ansible -y
         ansible-galaxy collection install azure.azcollection --force 
-        pip3 install -r ~/.ansible/collections/ansible_collections/azure/azcollection/requirements.txt
+        pip3 install -r ~/.ansible/collections/ansible_collections/azure/azcollection/requirements.txt --break-system-packages
       environment:
         PATH: /home/adcash/ansible/bin:{{ ansible_env.PATH }}
 
