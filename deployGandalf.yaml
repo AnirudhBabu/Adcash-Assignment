@@ -28,13 +28,30 @@
             ansible-galaxy collection install azure.azcollection --force
           pip3 list | grep azure-cli >/dev/null || \
             pip3 install -r ~/.ansible/collections/ansible_collections/azure/azcollection/requirements.txt --break-system-packages
+    - name: Install Azure CLI
+      shell: |
+          if ! command -v az &>/dev/null; then
+            curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
+          else
+            echo "Azure CLI already installed"
+          fi
+      args:
+        executable: /bin/bash
+      changed_when: false
 
+    - name: Login to Azure via CLI
+      shell: |
+        az login --service-principal -u $AZURE_CLIENT_ID -p $AZURE_SECRET --tenant $AZURE_TENANT
+        az account set --subscription $AZURE_SUBSCRIPTION_ID
+      args:
+        executable: /bin/bash
+      changed_when: false
 
 - name: Create Azure Kubernetes Cluster to host gandalfApp
   hosts: control
   connection: ssh
   vars:
-    auth_source: env
+    auth_source: cli
 
   tasks:
     - name: Create public IP address
