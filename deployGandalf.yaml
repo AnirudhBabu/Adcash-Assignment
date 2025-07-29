@@ -16,16 +16,17 @@
           - python3
           - python3-pip
           - curl
-          - python3-venv
         state: present
 
-    - name: Create virtual environment
-      shell: python3 -m venv /home/adcash/ansible
-      args:
-        creates: /home/adcash/ansible/bin/activate
+    - name: Install Ansible and Azure CLI
+      shell: |
+        curl -sL https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor | sudo tee /etc/apt/keyrings/microsoft.gpg > /dev/null
+        echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/microsoft.gpg] https://packages.microsoft.com/repos/azure-cli/ $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/azure-cli.list
 
-    - name: Install Ansible and Azure extras in virtualenv
-      shell: /home/adcash/ansible/bin/pip install 'ansible[azure]'
+        apt update
+        apt install azure-cli
+        pip install msrestazure azure-mgmt-resource --break-system-packages
+
       args:
         creates: /home/adcash/ansible/bin/ansible
       environment:
@@ -48,6 +49,7 @@
         sku: Standard
         location: switzerlandnorth
       register: output_ip_address
+
     - name: Store public IP for later
       set_fact:
         aks_public_ip: "{{ output_ip_address.state.ip_address }}"
