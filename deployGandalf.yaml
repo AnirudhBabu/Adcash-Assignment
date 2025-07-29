@@ -41,8 +41,8 @@
 
     - name: Login to Azure via CLI
       shell: |
-        az login --service-principal -u $AZURE_CLIENT_ID -p $AZURE_SECRET --tenant $AZURE_TENANT
-        az account set --subscription $AZURE_SUBSCRIPTION_ID
+        az login --service-principal -u {{ AZURE_CLIENT_ID }} -p {{ AZURE_SECRET }} --tenant {{ AZURE_TENANT }}
+        az account set --subscription {{ AZURE_SUBSCRIPTION_ID }}
       args:
         executable: /bin/bash
       changed_when: false
@@ -120,8 +120,8 @@
         aks_name: gandalfCluster
         username: adcash
         ssh_key: "{{ ssh_key }}"
-        client_id: "{{ client_id }}"
-        client_secret: "{{ client_secret }}"
+        AZURE_CLIENT_ID: "{{ AZURE_CLIENT_ID }}"
+        AZURE_SECRET: "{{ AZURE_SECRET }}"
         aks_version: 1.33.1
       azure_rm_aks:
         name: "{{ aks_name }}"
@@ -133,8 +133,8 @@
           admin_username: "{{ username }}"
           ssh_key: "{{ ssh_key }}"
         service_principal:
-          client_id: "{{ client_id }}"
-          client_secret: "{{ client_secret }}"
+          AZURE_CLIENT_ID: "{{ AZURE_CLIENT_ID }}"
+          AZURE_SECRET: "{{ AZURE_SECRET }}"
         agent_pool_profiles:
           - name: userpool
             count: 1
