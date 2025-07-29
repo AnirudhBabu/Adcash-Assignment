@@ -20,11 +20,14 @@
 
     - name: Install Ansible
       shell: |
-        apt update
-        add-apt-repository --yes --update ppa:ansible/ansible
-        apt install ansible -y
-        ansible-galaxy collection install azure.azcollection --force 
-        pip3 install -r ~/.ansible/collections/ansible_collections/azure/azcollection/requirements.txt --break-system-packages
+          apt update
+          grep -q "^deb .*\bansible\b" /etc/apt/sources.list.d/ansible-ansible.list || \
+            add-apt-repository --yes --update ppa:ansible/ansible
+          dpkg -s ansible >/dev/null 2>&1 || apt install ansible -y
+          [ -d ~/.ansible/collections/ansible_collections/azure/azcollection ] || \
+            ansible-galaxy collection install azure.azcollection --force
+          pip3 list | grep azure-cli >/dev/null || \
+            pip3 install -r ~/.ansible/collections/ansible_collections/azure/azcollection/requirements.txt --break-system-packages
       environment:
         PATH: /home/adcash/ansible/bin:{{ ansible_env.PATH }}
 
@@ -32,8 +35,6 @@
 - name: Create Azure Kubernetes Cluster to host gandalfApp
   hosts: control
   connection: ssh
-  vars:
-    auth_source: "cli"
 
   tasks:
     - name: Create public IP address
