@@ -54,7 +54,7 @@ jobs:
           chmod 600 ~/.ssh/id_rsa
 
       - name: Add control VM to known hosts
-        run: ssh-keyscan -H 74.161.160.100 >> ~/.ssh/known_hosts
+        run: ssh-keyscan -H $STATIC_IP >> ~/.ssh/known_hosts
 
       - name: Deploy Gandalf App and Prometheus Server Infra
         run: |
