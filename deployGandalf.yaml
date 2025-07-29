@@ -34,7 +34,7 @@
   hosts: control
   connection: ssh
   vars:
-    auth_source: "env"
+    auth_source: "cli"
 
   tasks:
     - name: Create public IP address
