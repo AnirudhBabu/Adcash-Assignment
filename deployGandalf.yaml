@@ -34,7 +34,7 @@
   hosts: control
   connection: ssh
   vars:
-    auth_source: "cli"
+    auth_source: env
 
   tasks:
     - name: Create public IP address
@@ -204,6 +204,8 @@
 - name: Deploy a VM for Prometheus Server
   hosts: control
   connection: ssh
+  vars:
+    auth_source: "env"
     
   tasks:
     - name: Generate SSH key pair for Prometheus VM

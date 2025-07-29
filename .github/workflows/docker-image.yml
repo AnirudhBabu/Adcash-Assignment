@@ -8,8 +8,10 @@ jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
     env:
-      CLIENT_ID: ${{ secrets.AZURE_CREDENTIALS_CLIENT_ID }}
-      CLIENT_SECRET: ${{ secrets.AZURE_CREDENTIALS_CLIENT_SECRET }}
+      AZURE_CLIENT_ID: ${{ secrets.AZURE_CREDENTIALS_AZURE_CLIENT_ID }}
+      AZURE_SECRET: ${{ secrets.AZURE_CREDENTIALS_AZURE_SECRET }}
+      AZURE_TENANT: ${{ secrets.AZURE_CREDENTIALS_TENANT_ID }}
+      AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_CREDENTIALS_SUBSCRIPTION_ID }}
       GHCR_PAT: ${{ secrets.GHCR_PAT }}
       STATIC_IP: ${{ secrets.STATIC_IP }}
     steps:
@@ -58,7 +60,7 @@ jobs:
 
       - name: Deploy Gandalf App and Prometheus Server Infra
         run: |
-          ansible-playbook -i inventory.ini deployGandalf.yaml -e "image_tag=${{ github.sha }} client_id=$CLIENT_ID client_secret=$CLIENT_SECRET GHCR_PAT=$GHCR_PAT static_ip=$STATIC_IP"
+          ansible-playbook -i inventory.ini deployGandalf.yaml -e "image_tag=${{ github.sha }} AZURE_CLIENT_ID=$AZURE_CLIENT_ID AZURE_SECRET=$AZURE_SECRET GHCR_PAT=$GHCR_PAT static_ip=$STATIC_IP"
 
       - name: Get Prometheus Private Key
         run: |
@@ -75,7 +77,7 @@ jobs:
             --resource-group adcash-assignment \
             --name GandalfCluster \
             --overwrite-existing
-    
+
       - name: Trigger Kubernetes Redeploy
         run: |
           kubectl set image deployment/gandalf-app gandalf=$LATEST_TAG
