@@ -20,14 +20,14 @@
         state: present
 
     - name: Create virtual environment
-      command: python3 -m venv ~/ansible
+      shell: python3 -m venv /home/adcash/ansible
       args:
-        creates: ~/ansible/bin/activate
+        creates: /home/adcash/ansible/bin/activate
 
     - name: Install Ansible and Azure extras in virtualenv
-      command: ~/ansible/bin/pip install 'ansible[azure]'
+      command: /home/adcash/ansible/bin/pip install 'ansible[azure]'
       environment:
-        PATH: ~/ansible/bin:{{ ansible_env.PATH }}
+        PATH: /home/adcash/ansible/bin:{{ ansible_env.PATH }}
 
 
 - name: Create Azure Kubernetes Cluster to host gandalfApp
@@ -83,13 +83,13 @@
 
     - name: Generate SSH key pair for AKS access
       ansible.builtin.openssh_keypair:
-        path: ~/.ssh/id_rsa
+        path: /home/adcash/.ssh/id_rsa
         type: rsa
         size: 4096
         mode: '0600'
 
     - name: Get public SSH key
-      shell: cat ~/.ssh/id_rsa.pub
+      shell: cat /home/adcash/.ssh/id_rsa.pub
       register: ssh_key_cat
       changed_when: false
 
@@ -155,7 +155,7 @@
     - name: Clone GitHub repo
       git:
         repo: 'https://github.com/AnirudhBabu/Adcash-Assignment.git'
-        dest: '~/adcash-assignment'
+        dest: '/home/adcash/adcash-assignment'
         version: main
 
     - name: Get AKS credentials for kubectl
@@ -210,13 +210,13 @@
   tasks:
     - name: Generate SSH key pair for Prometheus VM
       community.crypto.openssh_keypair:
-        path: ~/.ssh/prometheus_id_rsa
+        path: /home/adcash/.ssh/prometheus_id_rsa
         type: rsa
         size: 4096
         mode: '0600'
 
     - name: Get public SSH key
-      shell: cat ~/.ssh/prometheus_id_rsa.pub
+      shell: cat /home/adcash/.ssh/prometheus_id_rsa.pub
       register: ssh_key_prom
       changed_when: false
 
