@@ -38,6 +38,8 @@
   hosts: prom-server
   connection: ssh
   become: true
+  vars:
+    aks_public_ip: "{{ aks_public_ip }}"
   tasks:
     - name: Install Prometheus prerequisites
       apt:
