@@ -52,13 +52,27 @@
     auth_source: "env"
 
   tasks:
+    - name: Create virtual network
+      azure_rm_virtualnetwork:
+        resource_group: adcash-assignment
+        name: gandalf-vnet
+        location: swedencentral
+        address_prefixes: "10.0.0.0/16"
+
+    - name: Add subnet
+      azure_rm_subnet:
+        resource_group: adcash-assignment
+        name: nodeAppSubnet
+        address_prefix: "10.0.1.0/24"
+        virtual_network: gandalf-vnet
+
     - name: Create public IP address
       azure_rm_publicipaddress:
         resource_group: adcash-assignment
         allocation_method: Static
         name: gandalfIP
         sku: Standard
-        location: switzerlandnorth
+        location: swedencentral
       register: output_ip_address
 
     - name: Store public IP for later
@@ -72,7 +86,7 @@
     - name: Create Network Security Group that allows HTTP and SSH
       azure_rm_securitygroup:
         resource_group: adcash-assignment
-        name: Ansible-Control-Node-nsg
+        name: gandalf-app-nsg
         rules:
           - name: Allow_HTTP_Traffic
             protocol: TCP
@@ -91,9 +105,9 @@
       azure.azcollection.azure_rm_subnet:
         name: nodeAppSubnet
         resource_group: adcash-assignment
-        virtual_network_name: Ansible-Control-Node-vnet
+        virtual_network_name: gandalf-vnet
         address_prefix: 10.0.1.0/24
-        security_group: Ansible-Control-Node-nsg
+        security_group: gandalf-app-nsg
         state: present
 
     - name: Generate SSH key pair for AKS access
@@ -130,7 +144,7 @@
     - name: Create a managed Azure Container Services (AKS) cluster
       vars:
         resource_group: adcash-assignment
-        location: switzerlandnorth
+        location: swedencentral
         aks_name: gandalfCluster
         username: adcash
         ssh_key: "{{ ssh_key }}"
@@ -262,7 +276,7 @@
     - name: Create virtual network
       azure_rm_virtualnetwork:
         resource_group: adcash-assignment
-        location: swedencentral
+        location: switzerlandnorth
         name: prometheus-vnet
         address_prefixes: "10.0.0.0/16"
 
@@ -276,7 +290,7 @@
     - name: Create public IP address
       azure_rm_publicipaddress:
         resource_group: adcash-assignment
-        location: swedencentral
+        location: switzerlandnorth
         allocation_method: Static
         sku: Standard
         name: promPublicIP
@@ -326,7 +340,7 @@
         resource_group: adcash-assignment
         name: prometheusNIC
         virtual_network: prometheus-vnet
-        location: swedencentral
+        location: switzerlandnorth
         subnet: prom-subnet
         ip_configurations:
           - name: ipconfig1
@@ -338,7 +352,7 @@
         resource_group: adcash-assignment
         name: prom-server
         vm_size: Standard_A2_v2
-        location: swedencentral
+        location: switzerlandnorth
         admin_username: promSnoop
         network_interfaces: prometheusNIC
         ssh_password_enabled: false
