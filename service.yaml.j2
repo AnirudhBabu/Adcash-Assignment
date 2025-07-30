@@ -6,7 +6,7 @@ metadata:
     service.beta.kubernetes.io/azure-load-balancer-resource-group: {{ resource_group }}
 spec:
   type: LoadBalancer
-  loadBalancerIP: {{ static_ip }}
+  loadBalancerIP: {{ load_balancer_ip }}
   ports:
   - port: 80
     targetPort: 80

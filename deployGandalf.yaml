@@ -196,6 +196,7 @@
     service_manifest: service.yaml
     resource_group: adcash-assignment
     cluster_name: GandalfCluster
+    load_balancer_ip: "{{ aks_public_ip }}"
 
   tasks:
     - name: Get AKS credentials for kubectl
