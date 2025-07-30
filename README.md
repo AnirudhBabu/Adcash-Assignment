@@ -13,8 +13,8 @@ This repo contains a complete solution for the DevOps Engineering assignment fro
 
 - ✅ Custom Prometheus metrics:  
   `node_gandalf_request_total` and `node_colombo_request_total` exported by the web app for visit counters
-- ✅ Containerized Node.js app served on port `80` at [http://172.161.147.92/gandalf](http://172.161.147.92/gandalf) and [http://172.161.147.92/colombo](http://172.161.147.92/colombo) and custom prometheus metrics at [http://172.161.147.92/metrics](http://172.161.147.92/metrics)
-- ✅ Prometheus server collects metrics from Gandalf via scrape job. Access UI at [Prometheus UI](http://135.225.122.9:9090/graph?g0.expr=node_gandalf_request_total%7Bjob%3D%22gandalf_scraper%22%7D&g0.tab=1&g0.stacked=0&g0.show_exemplars=0&g0.range_input=1h&g1.expr=node_colombo_request_total%7Bjob%3D%22gandalf_scraper%22%7D&g1.tab=1&g1.stacked=0&g1.show_exemplars=0&g1.range_input=1h)
+- ✅ Containerized Node.js app served on port `80` at [[http://135.225.122.154/gandalf](http://135.225.122.154/gandalf) and [http://135.225.122.154/colombo](http://135.225.122.154/colombo) and custom prometheus metrics at [http://135.225.122.154/metrics](http://135.225.122.154/metrics)
+- ✅ Prometheus server collects metrics from Gandalf via scrape job. Access UI at [Prometheus UI](http://172.161.58.45:9090/graph?g0.expr=node_gandalf_request_total%7Bjob%3D%22gandalf_scraper%22%7D&g0.tab=1&g0.stacked=0&g0.show_exemplars=0&g0.range_input=1h&g1.expr=node_colombo_request_total%7Bjob%3D%22gandalf_scraper%22%7D&g1.tab=1&g1.stacked=0&g1.show_exemplars=0&g1.range_input=1h)
 - ✅ Configured using Ansible (chosen as YAML is easily understandable and usable)
 
 ## 📊 Metric Examples
@@ -34,6 +34,6 @@ node_colombo_request_total{method="GET",path="/colombo",status_code="200"} 13
 ## 📊 Resources visualization
 Below you can find a neatly arranged resource diagram straight from Azure, showing the resources used. More details about all resources seen here can be seen in `deployGandalf.yaml`:
 
-![A diagram showing the resources utilized in the deployment of this repository](https://github.com/AnirudhBabu/Adcash-Assignment/blob/51a6be59ac082405cd7a57808d5f208655f0734f/Adcash_Assignment.png)
+![A diagram showing the resources utilized in the deployment of this repository]((https://github.com/AnirudhBabu/Adcash-Assignment/blob/d210f2263372a47ef0349f4ee453bf88887893e8/adcash-assignment.png))
 
 
