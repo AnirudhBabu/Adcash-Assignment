@@ -120,6 +120,10 @@
 
     - name: Register AKS provider only if not registered
       shell: |
+        az login --service-principal \
+        --username $AZURE_CLIENT_ID \
+        --password $AZURE_SECRET \
+        --tenant $AZURE_TENANT
         az provider register --namespace Microsoft.ContainerService
       when: aks_provider_state.stdout != "Registered"
 
