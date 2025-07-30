@@ -111,6 +111,18 @@
     - set_fact:
         ssh_key: "{{ ssh_key_cat.stdout }}"
 
+    - name: Check if AKS provider is already registered
+      shell: |
+        az provider show --namespace Microsoft.ContainerService --query "registrationState" -o tsv
+      register: aks_provider_state
+      changed_when: false
+      failed_when: false
+
+    - name: Register AKS provider only if not registered
+      shell: |
+        az provider register --namespace Microsoft.ContainerService
+      when: aks_provider_state.stdout != "Registered"
+
     - name: Create a managed Azure Container Services (AKS) cluster
       vars:
         resource_group: adcash-assignment
