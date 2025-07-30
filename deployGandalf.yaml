@@ -198,12 +198,6 @@
     cluster_name: GandalfCluster
 
   tasks:
-    - name: Clone GitHub repo
-      git:
-        repo: 'https://github.com/AnirudhBabu/Adcash-Assignment.git'
-        dest: '/home/adcash/adcash-assignment'
-        version: main
-
     - name: Get AKS credentials for kubectl
       shell: |
         az aks get-credentials \
