@@ -19,7 +19,7 @@ This repo contains a complete solution for the DevOps Engineering assignment fro
 
 ## 📊 Metric Examples
 
-Prometheus scrapes metrics provided by the web app at [http://172.161.58.45/metrics](http://172.161.58.45/metrics):
+Prometheus scrapes metrics provided by the web app at [http://135.225.122.154/metrics](http://135.225.122.154/metrics):
 
 ```text
 # HELP node_gandalf_request_total The total number of GET requests received at /gandalf
