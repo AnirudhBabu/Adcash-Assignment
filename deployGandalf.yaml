@@ -2,8 +2,6 @@
   hosts: control
   connection: ssh
   become: true
-  vars:
-    auth_source: "cli"
 
   tasks:
     - name: Ensure apt cache is updated
@@ -42,19 +40,20 @@
         executable: /bin/bash
       changed_when: false
 
-    # - name: Login to Azure via CLI
-    #   shell: |
-    #     az login --service-principal -u "{{ AZURE_CLIENT_ID }}" -p "{{ AZURE_SECRET }}" --tenant "{{ AZURE_TENANT }}"
-    #     az account set --subscription "{{ AZURE_SUBSCRIPTION_ID }}"
-    #   args:
-    #     executable: /bin/bash
-    #   changed_when: false
+    - name: Export Azure credentials
+      shell: |
+        echo "export AZURE_TENANT={{ AZURE_TENANT }}" >> /home/adcash/.bashrc
+        echo "export AZURE_SUBSCRIPTION_ID={{ AZURE_SUBSCRIPTION_ID }}" >> /home/adcash/.bashrc
+        echo "export AZURE_CLIENT_ID={{ AZURE_CLIENT_ID }}" >> /home/adcash/.bashrc
+        echo "export AZURE_SECRET={{ AZURE_SECRET }}" >> /home/adcash/.bashrc
+      args:
+        executable: /bin/bash
 
 - name: Create Azure Kubernetes Cluster to host gandalfApp
   hosts: control
   connection: ssh
   vars:
-    auth_source: "cli"
+    auth_source: "env"
 
   tasks:
     - name: Create public IP address
@@ -225,7 +224,7 @@
   hosts: control
   connection: ssh
   vars:
-    auth_source: "cli"
+    auth_source: "env"
     
   tasks:
     - name: Generate SSH key pair for Prometheus VM
