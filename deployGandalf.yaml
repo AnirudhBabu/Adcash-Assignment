@@ -131,8 +131,8 @@
           admin_username: "{{ username }}"
           ssh_key: "{{ ssh_key }}"
         service_principal:
-          AZURE_CLIENT_ID: "{{ AZURE_CLIENT_ID }}"
-          AZURE_SECRET: "{{ AZURE_SECRET }}"
+          client_id: "{{ AZURE_CLIENT_ID }}"
+          secret: "{{ AZURE_SECRET }}"
         agent_pool_profiles:
           - name: userpool
             count: 1
