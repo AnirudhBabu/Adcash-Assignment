@@ -34,6 +34,6 @@ node_colombo_request_total{method="GET",path="/colombo",status_code="200"} 13
 ## 📊 Resources visualization
 Below you can find a neatly arranged resource diagram straight from Azure, showing the resources used. More details about all resources seen here can be seen in `deployGandalf.yaml`:
 
-![A diagram showing the resources utilized in the deployment of this repository]((https://github.com/AnirudhBabu/Adcash-Assignment/blob/d210f2263372a47ef0349f4ee453bf88887893e8/adcash-assignment.png))
+![A diagram showing the resources utilized in the deployment of this repository](https://github.com/AnirudhBabu/Adcash-Assignment/blob/d210f2263372a47ef0349f4ee453bf88887893e8/adcash-assignment.png)
 
 
