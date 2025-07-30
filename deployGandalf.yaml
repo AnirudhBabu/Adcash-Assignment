@@ -87,6 +87,7 @@
       azure_rm_securitygroup:
         resource_group: adcash-assignment
         name: gandalf-app-nsg
+        location: swedencentral
         rules:
           - name: Allow_HTTP_Traffic
             protocol: TCP
@@ -309,6 +310,7 @@
       azure_rm_securitygroup:
         resource_group: adcash-assignment
         name: prometheus-nsg
+        location: switzerlandnorth
         rules:
           - name: Allow_SSH
             protocol: TCP
