@@ -9,14 +9,6 @@
     - set_fact:
         prom_public_ip: "{{ prom_ip_raw['content'] | b64decode }}"
 
-    - name: Read AKS public IP
-      slurp:
-        src: /tmp/aks_ip.txt
-      register: aks_ip_raw
-
-    - set_fact:
-        aks_public_ip: "{{ aks_ip_raw['content'] | b64decode }}"
-
     - name: Add prom-server to inventory dynamically
       ansible.builtin.add_host:
         name: prom-server
@@ -33,14 +25,26 @@
         name: "{{ prom_public_ip }}"
         key: "{{ lookup('pipe', 'ssh-keyscan {{ prom_public_ip }}') }}"
         path: "~/.ssh/known_hosts"
+
+    - name: Transfer AKS public IP to prom-server
+      shell: |
+        scp -i ~/.ssh/prometheus_id_rsa /tmp/aks_ip.txt promSnoop@"{{ prom_public_ip }}":/tmp/aks_ip.txt
+
+    
       
 - name: Configure VM to be a Prometheus Server
   hosts: prom-server
   connection: ssh
   become: true
-  vars:
-    aks_ip: "{{ aks_public_ip }}"
   tasks:
+    - name: Read AKS public IP
+      slurp:
+        src: /tmp/aks_ip.txt
+      register: aks_ip_raw
+
+    - set_fact:
+        aks_public_ip: "{{ aks_ip_raw['content'] | b64decode }}"
+  
     - name: Install Prometheus prerequisites
       apt:
         update_cache: yes
@@ -93,7 +97,7 @@
           scrape_configs:
             - job_name: 'gandalf_scraper'
               static_configs:
-                - targets: ["{{ aks_ip }}:80"]
+                - targets: ["{{ aks_public_ip }}:80"]
               metrics_path: /metrics
 
     - name: Create systemd service for Prometheus
