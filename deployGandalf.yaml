@@ -132,7 +132,7 @@
           ssh_key: "{{ ssh_key }}"
         service_principal:
           client_id: "{{ AZURE_CLIENT_ID }}"
-          secret: "{{ AZURE_SECRET }}"
+          client_secret: "{{ AZURE_SECRET }}"
         agent_pool_profiles:
           - name: userpool
             count: 1
