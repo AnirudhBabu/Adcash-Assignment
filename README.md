@@ -86,7 +86,7 @@ kubectl apply -f ../gitops/bootstrap/app-of-apps.yaml
 
 # 4. Scaffold a new service without touching YAML by hand
 cd ../cli
-pip install -r requirements.txt --break-system-packages
+pip install -r requirements.txt
 python3 main.py create-app --name payments-service --image ghcr.io/anirudhbabu/payments-service:v1.0.0
 ```
 
