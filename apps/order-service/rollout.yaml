@@ -1,0 +1,64 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
+metadata:
+  name: order-service
+  namespace: staging
+spec:
+  replicas: 5
+  revisionHistoryLimit: 3
+  strategy:
+    canary:
+      analysis:
+        templates:
+          - templateName: success-rate-analysis
+        args:
+          # NOTE: success-rate-analysis defines both the success-rate and
+          # p99-latency metrics; Argo Rollouts evaluates every metric in the
+          # referenced template on each analysis run.
+          - name: service-name
+            value: order-service
+        startingStep: 1        # run analysis starting after the first traffic shift
+      steps:
+        - setWeight: 10
+        - pause: { duration: 2m }
+        - setWeight: 50
+        - pause: { duration: 5m }
+        - setWeight: 100
+  selector:
+    matchLabels:
+      app: order-service
+  template:
+    metadata:
+      labels:
+        app: order-service
+    spec:
+      containers:
+        - name: app
+          image: ghcr.io/anirudhbabu/order-service:v2.0.0
+          ports:
+            - containerPort: 8080
+              name: http
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 256Mi
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 3
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: order-service
+  namespace: staging
+spec:
+  selector:
+    app: order-service
+  ports:
+    - port: 80
+      targetPort: 8080

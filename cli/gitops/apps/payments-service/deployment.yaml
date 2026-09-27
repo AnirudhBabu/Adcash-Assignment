@@ -1,0 +1,53 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
+metadata:
+  name: payments-service
+  namespace: staging
+spec:
+  replicas: 3
+  strategy:
+    canary:
+      analysis:
+        templates:
+          - templateName: success-rate-analysis
+        args:
+          - name: service-name
+            value: payments-service
+      steps:
+        - setWeight: 10
+        - pause: { duration: 2m }
+        - setWeight: 50
+        - pause: { duration: 5m }
+        - setWeight: 100
+  selector:
+    matchLabels:
+      app: payments-service
+  template:
+    metadata:
+      labels:
+        app: payments-service
+    spec:
+      containers:
+        - name: payments-service
+          image: ghcr.io/anirudhbabu/payments-service:v1.0.0
+          ports:
+            - containerPort: 8080
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 256Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: payments-service
+  namespace: staging
+spec:
+  ports:
+    - port: 8080
+      targetPort: 8080
+  selector:
+    app: payments-service

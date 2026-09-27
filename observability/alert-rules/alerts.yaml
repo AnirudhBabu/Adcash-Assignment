@@ -1,0 +1,24 @@
+groups:
+  - name: order-service-canary
+    rules:
+      - alert: OrderServiceSuccessRateBelowCanaryGate
+        expr: |
+          sum(rate(http_requests_total{app="order-service", status!~"5.*"}[2m]))
+          /
+          sum(rate(http_requests_total{app="order-service"}[2m]))
+          < 0.995
+        for: 2m
+        labels:
+          severity: page
+        annotations:
+          summary: "order-service success rate below the 99.5% canary gate"
+          description: "Same threshold Argo Rollouts uses to auto-abort a canary -- if this fires outside a rollout, it's a steady-state incident, not a bad deploy."
+
+      - alert: OrderServiceP99LatencyHigh
+        expr: |
+          histogram_quantile(0.99, sum(rate(http_request_duration_seconds_bucket{app="order-service"}[2m])) by (le)) > 0.3
+        for: 5m
+        labels:
+          severity: ticket
+        annotations:
+          summary: "order-service p99 latency above 300ms for 5m"

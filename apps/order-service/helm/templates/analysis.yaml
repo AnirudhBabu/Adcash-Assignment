@@ -1,0 +1,34 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AnalysisTemplate
+metadata:
+  name: success-rate-analysis
+  namespace: staging
+spec:
+  args:
+    - name: service-name
+  metrics:
+    - name: success-rate
+      interval: 30s
+      count: 5
+      successCondition: "result[0] >= {{ .Values.canary.successRateThreshold }}"
+      failureLimit: 3
+      provider:
+        prometheus:
+          address: http://prometheus-kube-prometheus-prometheus.monitoring:9090
+          query: |
+            sum(rate(http_requests_total{app="{{ "{{" }} args.service-name {{ "}}" }}", status!~"5.*"}[2m]))
+            /
+            sum(rate(http_requests_total{app="{{ "{{" }} args.service-name {{ "}}" }}"}[2m]))
+
+    - name: p99-latency
+      interval: 30s
+      count: 5
+      successCondition: "result[0] <= {{ .Values.canary.p99LatencyThresholdSeconds }}"
+      failureLimit: 3
+      provider:
+        prometheus:
+          address: http://prometheus-kube-prometheus-prometheus.monitoring:9090
+          query: |
+            histogram_quantile(0.99,
+              sum(rate(http_request_duration_seconds_bucket{app="{{ "{{" }} args.service-name {{ "}}" }}"}[2m])) by (le)
+            )
