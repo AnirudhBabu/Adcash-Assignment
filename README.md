@@ -1,7 +1,6 @@
-# Adcash IDP — Internal Developer Platform
+# GitOps Developer Platform
 
-Extends the [Adcash-Assignment](https://github.com/AnirudhBabu/Adcash-Assignment)
-observability challenge into a full GitOps-driven internal developer
+Extends the Adcash interview observability challenge into a full GitOps-driven internal developer
 platform: Terraform-provisioned cluster and add-ons, ArgoCD for declarative
 state, Argo Rollouts for metric-gated canary deployments, Kyverno for
 policy-as-code, and OpenCost for per-namespace cost visibility — plus a
